@@ -1,129 +1,114 @@
-import tkinter as tk
 import tkinter.font as tkFont
-from tkinter import *
+import tkinter.messagebox
+from tkinter import ttk, messagebox, END
+from ttkthemes import ThemedTk
 from algo import *
 
-class App:
-    def __init__(self, root):
-        #setting title
+
+class App():
+    def __init__(self, tk):
+        self.tk = tk
         self.input_file_path = None
         self.save_xlsx_path = None
         self.input_file = None
+        self.bootcamp_dir = r"G:\.shortcut-targets-by-id\1-9lckUfMsCWBy2igthBlY7BcDCwNSAii\Nexite Workspace\System\Trials and night tests\Bootcamps\2022"
+
         root.title("Bootcamp Script")
-        #setting window size
-        width=500
-        height=329
+        # setting window size
+        width = 500
+        height = 200
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
         root.geometry(alignstr)
         root.resizable(width=False, height=False)
+        root.columnconfigure(0, weight=1, pad=10)
+        root.columnconfigure(1, weight=1)
+        root.columnconfigure(2, weight=1)
 
-        title=tk.Label(root)
-        ft = tkFont.Font(family='Times',size=18)
+        # Bootcamp Matrix Title
+        title = ttk.Label(root)
+        ft = tkFont.Font(family='Times', size=18)
         title["font"] = ft
-        title["fg"] = "#333333"
-        title["justify"] = "center"
-        title["text"] = "Bootcamp Matrice Creator"
-        title.place(x=40, y=10, width=267, height=52)
+        title["text"] = "Bootcamp Matrix Creator"
+        title.grid(column=0, row=0, columnspan=2)
 
-        input_browse_button=tk.Button(root)
-        input_browse_button["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times',size=10)
-        input_browse_button["font"] = ft
-        input_browse_button["fg"] = "#000000"
-        input_browse_button["justify"] = "center"
-        input_browse_button["text"] = "Browse..."
-        input_browse_button.place(x=90, y=100, width=130, height=30)
+        # Input Browse Button
+        input_browse_button = ttk.Button(root)
+        input_browse_button["text"] = "Select Input File..."
         input_browse_button["command"] = self.inputFileBrowseCommand
+        input_browse_button.grid(column=0, row=1, pady=30)
 
-        self.input_file_message=tk.Label(root)
-        ft = tkFont.Font(family='Times',size=10)
-        self.input_file_message["font"] = ft
-        self.input_file_message["fg"] = "#333333"
-        self.input_file_message["justify"] = "center"
-        self.input_file_message["text"] = "Waiting for action..."
-        self.input_file_message["relief"] = "sunken"
-        self.input_file_message.place(x=0, y=140, width=500, height=32)
+        # Input Text Bar (where the selected path is shown)
+        self.input_textbox = ttk.Entry(root)
+        self.input_textbox.grid(column=1, row=1, sticky='ew')
 
-        input_file_label=tk.Label(root)
-        ft = tkFont.Font(family='Times',size=13)
+        # Input File label
+        input_file_label = ttk.Label(root)
+        ft = tkFont.Font(family='Operator Mono', size=13)
         input_file_label["font"] = ft
-        input_file_label["fg"] = "#333333"
         input_file_label["justify"] = "center"
         input_file_label["text"] = "Input File:"
-        input_file_label.place(x=10, y=100, width=70, height=25)
 
-        save_path_label=tk.Label(root)
-        ft = tkFont.Font(family='Times',size=13)
-        save_path_label["font"] = ft
-        save_path_label["fg"] = "#333333"
-        save_path_label["justify"] = "center"
-        save_path_label["text"] = "Save Path:"
-        save_path_label.place(x=10, y=190, width=76, height=30)
+        # Output File name label
+        output_name_label = ttk.Label(root)
+        ft = tkFont.Font(family='Operator Mono', size=12)
+        output_name_label["font"] = ft
+        output_name_label["justify"] = "center"
+        output_name_label["text"] = "Output Name:"
+        output_name_label.grid(column=0, row=2)
 
-        browse_save_button=tk.Button(root)
-        browse_save_button["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times',size=10)
-        browse_save_button["font"] = ft
-        browse_save_button["fg"] = "#000000"
-        browse_save_button["justify"] = "center"
-        browse_save_button["text"] = "Select Save Path"
-        browse_save_button.place(x=90, y=190, width=130, height=30)
-        browse_save_button["command"] = self.browseSavePath
-
-        self.save_path_message=tk.Label(root)
-        ft = tkFont.Font(family='Times',size=10)
-        self.save_path_message["font"] = ft
-        self.save_path_message["fg"] = "#333333"
-        self.save_path_message["justify"] = "center"
-        self.save_path_message["text"] = "Waiting for action..."
-        self.save_path_message["relief"] = "sunken"
-        self.save_path_message.place(x=0, y=240, width=500, height=30)
-
-        create_file_button = tk.Button(root)
-        create_file_button["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times', size=10)
-        create_file_button["font"] = ft
-        create_file_button["fg"] = "#000000"
-        create_file_button["justify"] = "center"
+        # Create file button
+        create_file_button = ttk.Button(root)
         create_file_button["text"] = "Create Excel File"
-        create_file_button.place(x=180, y=280, width=130, height=30)
+        create_file_button.grid(column=1, row=3, sticky="w", pady=5)
         create_file_button["command"] = self.create_file_command
 
-
+        # Output file textbox
+        self.output_file_textbox = ttk.Entry(root)
+        self.output_file_textbox.grid(column=1, row=2, sticky='we')
 
     def inputFileBrowseCommand(self):
-        input_file_path = filedialog.askopenfilename(initialdir=r"C:\Users\ShaiPC\Desktop\Python - SyncTrayzor\excel_script_nexite",
-                                              title="Select a File",
-                                              filetypes=[("Excel file","*.xlsx")])
-        self.input_file_message['text'] = f"{input_file_path}"
+        input_file_path = filedialog.askopenfilename(
+            initialdir=r"C:\Users\Shai\Documents\Python\excel_script_nexite\input",
+            title="Select a File",
+            filetypes=[("Excel file", "*.xlsx")])
+        self.input_textbox.insert(END, str(input_file_path))
         self.input_file_path = input_file_path
+        print(input_file_path)
         return input_file_path
 
-    def browseSavePath(self):
-        save_file_path = filedialog.askdirectory(initialdir=r"C:\Users\ShaiPC\Desktop\New folder",
-                                              title='Select a directory for output file')
-        self.save_path_message['text'] = save_file_path + "/output.xlsx"
-        self.save_xlsx_path = save_file_path
-        print(self.input_file_path)
-
-        return save_file_path
-
     def create_file_command(self):
-        listToMatrix(self.input_file_path,self.save_xlsx_path)
+        global raw_file_len
+        output_textbox = self.output_file_textbox.get()
+        print(output_textbox)
+        sliced_path = self.input_file_path[:-5]
+        raw_file_len = len(read_excel(self.input_file_path, header=None))
 
-    def status_popup(self):
-        top = Toplevel(root)
-        top.geometry('150x150')
-        top.title('Status')
-        Label(top,text=f'{self.input_file}')
+        try:
+
+            if output_textbox == "":
+                now = getTime()
+                print(now)
+
+                listToMatrix(self.input_file_path, f'{sliced_path}_{now}.xlsx')
+            else:
+                listToMatrix(self.input_file_path, f'{sliced_path}{output_textbox}.xlsx')
 
 
-
+            df = read_excel(io=self.input_file_path, sheet_name=0, header=None)
+            raw_list = list([value for cell, value in df[0].iteritems()])
+            duplicates = duplicates_check(raw_list)
+            if duplicates:
+                tkinter.messagebox.showinfo(message='Found duplicates in the excel file! \n Check the file:' + self.input_file_path,
+                               )
+            else:
+                tkinter.messagebox.showinfo(message=f'No Duplicates Found!  \n The length of the input file is {raw_file_len}\n Created {(raw_file_len // 104)} Boards')
+        except Exception as VE:
+            messagebox.showerror(title="Raised ERROR MESSAGE", message=str(VE))
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = ThemedTk(theme='arc')
     app = App(root)
     root.mainloop()
