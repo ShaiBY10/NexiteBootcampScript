@@ -70,7 +70,7 @@ class App():
 
     def inputFileBrowseCommand(self):
         input_file_path = filedialog.askopenfilename(
-            initialdir=r"C:\Users\Shai\Documents\Python\excel_script_nexite\input",
+            initialdir=self.bootcamp_dir,
             title="Select a File",
             filetypes=[("Excel file", "*.xlsx")])
         self.input_textbox.insert(END, str(input_file_path))
@@ -99,7 +99,7 @@ class App():
             raw_list = list([value for cell, value in df[0].iteritems()])
             duplicates = duplicates_check(raw_list)
             if duplicates:
-                tkinter.messagebox.showinfo(
+                tkinter.messagebox.showerror(
                     message='Found duplicates in the excel file! \n Check the file:' + self.input_file_path,
                     )
             else:
@@ -110,6 +110,6 @@ class App():
 
 
 if __name__ == "__main__":
-    root = ThemedTk(theme='arc')
+    root = ThemedTk(theme='breeze')
     app = App(root)
     root.mainloop()
