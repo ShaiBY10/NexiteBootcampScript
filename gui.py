@@ -14,9 +14,10 @@ class App():
         self.bootcamp_dir = r"G:\.shortcut-targets-by-id\1-9lckUfMsCWBy2igthBlY7BcDCwNSAii\Nexite Workspace\System\Trials and night tests\Bootcamps\2022"
 
         root.title("Bootcamp Script")
+        root.tk.call('tk','scaling',2.0)
         # setting window size
         width = 500
-        height = 200
+        height = 250
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)

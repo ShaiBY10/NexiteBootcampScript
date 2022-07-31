@@ -90,7 +90,7 @@ def listToMatrix(raw_file, output_name=''):
     boards = list(map(Series, boards_list)) # convert every board in the board list to series
     reshaped_list = list()
     for board in boards:
-        reshaped_list.append(board.values.reshape(8, 13,order='f')) # Create a matrix with a shape of (8,13) to each board in board list
+        reshaped_list.append(board.values.reshape((8,13),order='F')) # Create a matrix with a shape of (8,13) to each board in board list
     df = DataFrame(np.concatenate(reshaped_list)) # Stack all boards into one dataframe
     new_df = add_empty_rows(df, 1, 8)
     new_df.to_excel(output_name, header=None, index=False,engine='openpyxl') # Export to excel
