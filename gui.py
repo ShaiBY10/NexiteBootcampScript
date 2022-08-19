@@ -92,9 +92,9 @@ class App():
                 now = getTime()
                 print(now)
 
-                listToMatrix(self.input_file_path, f'{sliced_path}_{now}.xlsx')
+                self.input_file_path =listToMatrix(self.input_file_path, f'{sliced_path}_{now}.xlsx')
             else:
-                listToMatrix(self.input_file_path, f'{sliced_path}{output_textbox}.xlsx')
+                self.input_file_path = listToMatrix(self.input_file_path, f'{sliced_path}{output_textbox}.xlsx')
 
             df = read_excel(io=self.input_file_path, sheet_name=0, header=None)
             raw_list = list([value for cell, value in df[0].iteritems()])
@@ -108,9 +108,12 @@ class App():
                     message=f'No Duplicates Found! \n The length of the input file is {raw_file_len}\n Created {(raw_file_len // 104)} Boards\nPath: {sliced_path}{output_textbox}')
         except Exception as VE:
             messagebox.showerror(title="Raised ERROR MESSAGE", message=str(VE))
+            raise VE
 
 
 if __name__ == "__main__":
     root = ThemedTk(theme='breeze')
     app = App(root)
     root.mainloop()
+
+

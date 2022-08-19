@@ -1,5 +1,4 @@
-import io
-
+from shutil import move
 from pandas import read_excel, RangeIndex, Series, DataFrame
 import numpy as np
 from tkinter import filedialog
@@ -17,7 +16,7 @@ def browseFiles():
     return filepath
 
 
-def duplicates_check(input_list):
+def duplicatesCheck(input_list):
     """
     Checks for duplicates in the input Excel file.
     :param: input_list:
@@ -32,7 +31,7 @@ def duplicates_check(input_list):
         return False
 
 
-def add_empty_rows(df, n_empty, n_steps):
+def addEmptyRows(df, n_empty, n_steps):
     """ adds 'n_empty' empty rows every 'n_steps' rows  to 'df'.
         Returns a new DataFrame. """
 
@@ -59,7 +58,7 @@ def add_empty_rows(df, n_empty, n_steps):
     return new_df
 
 
-def list_split(input_list, chunk_size=104):
+def listSplit(input_list, chunk_size=104):
     """
      Takes a list and returns list of `n` splited list
 
@@ -70,6 +69,18 @@ def list_split(input_list, chunk_size=104):
     for i in range(0, len(input_list), chunk_size):
         yield input_list[i:i + chunk_size]
 
+def CreateAndMoveRawFile(raw_file):
+    #Check if directory exists
+    directory_content = os.listdir(os.path.dirname(raw_file))
+    if "Raw file" in directory_content:
+        dstn = move(raw_file, os.path.join(os.path.dirname(raw_file),"Raw file"))
+        print('DSTNNNN', dstn)
+    else:
+        print('case where there is no rawfile folder')
+        os.mkdir(os.path.join(os.path.dirname(raw_file),"Raw file"))
+        dstn = move(raw_file,os.path.join(raw_file,os.path.dirname(raw_file),"Raw file"))
+        # print('Created new folder named: "Raw file", The raw file is there now :)')
+        return dstn
 
 def listToMatrix(raw_file, output_name=''):
     """
@@ -85,16 +96,17 @@ def listToMatrix(raw_file, output_name=''):
     df.index += 1
     raw_list = [value for cell, value in df[0].iteritems()] # list of first col of excel file
     raw_list = [str(i)[-6:] for i in raw_list]  # Take only last 6 chars of each item in list
-    duplicates_check(raw_list)
-    boards_list = list(list_split(raw_list)) # spereate each 104 nuids to one board
+    duplicatesCheck(raw_list)
+    boards_list = list(listSplit(raw_list)) # spereate each 104 nuids to one board
     boards = list(map(Series, boards_list)) # convert every board in the board list to series
     reshaped_list = list()
     for board in boards:
         reshaped_list.append(board.values.reshape((8,13),order='F')) # Create a matrix with a shape of (8,13) to each board in board list
     df = DataFrame(np.concatenate(reshaped_list)) # Stack all boards into one dataframe
-    new_df = add_empty_rows(df, 1, 8)
+    new_df = addEmptyRows(df, 1, 8)
     new_df.to_excel(output_name, header=None, index=False,engine='openpyxl') # Export to excel
     print(f"Attention! The length of the input file is {len(raw_list)}, \nCreated {len(boards_list)} Boards!")
+    new_df = CreateAndMoveRawFile(raw_file)
     return new_df
 
 
