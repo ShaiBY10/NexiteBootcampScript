@@ -5,3 +5,5 @@ pyinstaller {main.py} {parameters}
 -F: Create a one file bundled executable
 -c: open the exe with a console window
 -w: Open the exe without a console window
+
+pyinstaller gui.py --clean --onefile -c 

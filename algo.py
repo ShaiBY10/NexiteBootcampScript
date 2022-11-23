@@ -95,7 +95,7 @@ def listToMatrix(raw_file, output_name=''):
     print(raw_file)
     df.index += 1
     raw_list = [value for cell, value in df[0].iteritems()] # list of first col of excel file
-    raw_list = [str(i)[-6:] for i in raw_list]  # Take only last 6 chars of each item in list
+    raw_list = [str(i)[-7:] for i in raw_list]  # Take only last 6 chars of each item in list
     duplicatesCheck(raw_list)
     boards_list = list(listSplit(raw_list)) # spereate each 104 nuids to one board
     boards = list(map(Series, boards_list)) # convert every board in the board list to series
